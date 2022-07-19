@@ -47,6 +47,10 @@ sharedMap.set("key2", "def");
 sharedMap.commit();
 ```
 
+## Demo
+
+- React based [hello world](https://github.com/dstanesc/shared-property-map-hello)
+
 ## Configure Fluid Service
 
 Configure the Fluid service w/ environment variables `FLUID_MODE=frs|router|tiny`
