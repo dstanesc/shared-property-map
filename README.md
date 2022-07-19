@@ -7,6 +7,18 @@ Minimal [property tree](https://github.com/microsoft/FluidFramework/tree/main/ex
 
 ```ts
 /*
+ * Factory 
+ */
+export async function initMap(
+    mapId: string | undefined,
+    leafAdd: UpdateCallback,
+    leafUpdate: UpdateCallback,
+    leafRemove: DeleteCallback,
+    treeClass: any = SharedPropertyTree,
+    registerSchemaFlag: boolean = true
+): Promise<SharedPropertyMap> 
+
+/*
  * Map like interface
  */
 export interface SharedPropertyMap {
