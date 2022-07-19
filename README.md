@@ -32,6 +32,12 @@ export interface SharedPropertyMap {
 }
 ```
 
+## Install
+
+```
+npm install --save-dev @dstanesc/shared-property-map
+```
+
 ## Usage
 
 ```ts
