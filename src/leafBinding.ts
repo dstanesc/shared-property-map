@@ -14,8 +14,8 @@ export class LeafBinding extends DataBinding {
             const controller = this.getRepresentation<LeafController>();
             const changeSet = context.getNestedChangeSet();
             if (changeSet.String) {
-                const leafPayload = changeSet.String.leafPayload;
-                controller.insert(key, leafPayload);
+                const payload = changeSet.String.payload;
+                controller.insert(key, payload);
             }
         }
     }
@@ -30,8 +30,8 @@ export class LeafBinding extends DataBinding {
             // console.log(`Relative path ${relativePath}`);
             // console.log(JSON.stringify(changeSet, null, 2));
             if (changeSet.String) {
-                const leafPayload = changeSet.String.leafPayload;
-                controller.update(key, leafPayload);
+                const payload = changeSet.String.payload;
+                controller.update(key, payload);
             }
         }
     }

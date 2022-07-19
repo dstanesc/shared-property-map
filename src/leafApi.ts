@@ -6,6 +6,7 @@ import { LeafBinding } from "./leafBinding";
 import { LeafController } from "./leafController";
 import { createSimpleWorkspace, registerSchema, SimpleWorkspace } from "./workspace";
 import { DeleteCallback, SharedPropertyMap, UpdateCallback } from "./interfaces";
+import { SharedPropertyTree } from "@fluid-experimental/property-dds";
 
 export const MAIN: string = "main";
 
@@ -18,12 +19,16 @@ export interface Branch {
     name: string;
 }
 
-export async function initMap(mapId: string, treeClass: any,
+export async function initMap(
+    mapId: string | undefined,
     leafAdd: UpdateCallback,
     leafUpdate: UpdateCallback,
-    leafRemove: DeleteCallback): Promise<SharedPropertyMap> {
+    leafRemove: DeleteCallback,
+    treeClass: any = SharedPropertyTree,
+    registerSchemaFlag: boolean = true
+): Promise<SharedPropertyMap> {
 
-    const workspace = await initWorkspace(mapId, treeClass, leafAdd, leafUpdate, leafRemove);
+    const workspace = await initWorkspace(mapId, treeClass, leafAdd, leafUpdate, leafRemove, registerSchemaFlag);
 
     return {
         delete: (key: string) => removeLeaf(key, workspace),
@@ -32,9 +37,9 @@ export async function initMap(mapId: string, treeClass: any,
         has: (key: string) => getLeaf(key, workspace) !== undefined,
         set: (key: string, value: string) => { updateLeaf(key, value, workspace); return this; },
         keys: () => getKeys(workspace),
+        values: () => getLeaves(workspace).map(leaf => leaf.payload),
         commit: () => workspace.commit(),
         dispose: () => workspace.dispose(),
-
         insert: (key: string, value: string) => { createLeaf(key, value, workspace); return this; },
         insertMany: (map: Map<string, string>) => { createLeaves(map, workspace); return this; },
         updateMany: (map: Map<string, string>) => { updateLeaves(map, workspace); return this; },
@@ -43,16 +48,28 @@ export async function initMap(mapId: string, treeClass: any,
     }
 }
 
-export async function initWorkspace(containerId: string, treeClass: any,
+export async function initWorkspace(
+    containerId: string,
+    treeClass: any,
     leafAdd: (name: string, payload: string) => void,
     leafUpdate: (name: string, payload: string) => void,
-    leafRemove: (name: string) => void): Promise<SimpleWorkspace> {
-    registerSchema(branch);
-    registerSchema(leaf);
+    leafRemove: (name: string) => void,
+    registerSchemaFlag: boolean = true
+): Promise<SimpleWorkspace> {
+
+    if (registerSchemaFlag) {
+        registerSchema(branch);
+        registerSchema(leaf);
+    }
+
     const workspace = await createSimpleWorkspace(containerId, treeClass);
     configureBinding(workspace.dataBinder, leafAdd, leafUpdate, leafRemove);
-    createBranch(MAIN, workspace);
-    workspace.commit();
+
+    if (containerId === undefined) {
+        createBranch(MAIN, workspace);
+        workspace.commit();
+    }
+
     return workspace;
 }
 
@@ -107,7 +124,10 @@ export function updateLeaves(payloads: Map<string, string>, workspace: SimpleWor
 
 export function updateLeaf(key: string, payload: string, workspace: SimpleWorkspace) {
     const leafProperty = retrieveBranchProperty(MAIN, workspace).get(key) as NamedProperty;
-    leafProperty.setValues({ PAYLOAD: payload });
+    if (leafProperty === undefined)
+        createLeaf(key, payload, workspace);
+    else
+        leafProperty.setValues({"payload": payload});
 }
 
 export function createLeaves(payloads: Map<string, string>, workspace: SimpleWorkspace): Leaf[] {

@@ -1,6 +1,6 @@
 # Shared Property Map
 
-Minimal [property tree]((https://github.com/microsoft/FluidFramework/tree/main/experimental/PropertyDDS) instantiation with data binding and distributed change notifications. Intended to simplify the testing of the [FluidFramework's](https://github.com/microsoft/FluidFramework) larger data use-cases.
+Minimal [property tree]((https://github.com/microsoft/FluidFramework/tree/main/experimental/PropertyDDS) instantiation with data binding and distributed change notifications. Intended to simplify the testing of [FluidFramework's](https://github.com/microsoft/FluidFramework) larger data use-cases.
 
 
 ## API
@@ -23,7 +23,7 @@ export interface SharedPropertyMap {
     insertMany(map: Map<string, string>): this;
     updateMany(map: Map<string, string>): this;
     deleteMany(keys: string[]): void;
-    // map identity to enable distributed / collaborative editing
+    // map identity token (needed for distributed editing)
     mapId(): string;
     // make changes visible to remote peers
     commit(): void;
@@ -35,17 +35,16 @@ export interface SharedPropertyMap {
 ## Usage
 
 ```ts
-import { SharedPropertyTree } from "@fluid-experimental/property-dds";
-import { 
-    initMap, 
-    SharedPropertyMap, 
-} from "@dstanesc/shared-property-map";
-
-let sharedMap: SharedPropertyMap = await initMap(undefined, SharedPropertyTree, insertCallback, updateCallback, deleteCallback);
-
-sharedMap.set('123', 'abc');
-sharedMap.delete('123');
-sharedMap.commit()
+import { initMap } from '@dstanesc/shared-property-map';
+const sharedMap = await initMap(
+  mapId,
+  updateLocalModel,
+  updateLocalModel,
+  deleteLocalModel
+);
+sharedMap.set("key1", "abc");
+sharedMap.set("key2", "def");
+sharedMap.commit();
 ```
 
 ## Configure Fluid Service
@@ -64,9 +63,12 @@ SECRET_FLUID_TENANT=xyz
 
 ## Build & Test
 
-> Note: npm tests are pre-configured with the `FLUID_MODE=frs` setting (see `package.json`)
+> Note: npm tests are pre-configured with the `FLUID_MODE=tiny` setting (see `package.json`)
 
+```sh
+npx tinylicious
 ```
+```sh
 npm run clean
 npm install
 npm run build
