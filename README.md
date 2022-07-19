@@ -1,6 +1,6 @@
 # Shared Property Map
 
-Minimal [property tree]((https://github.com/microsoft/FluidFramework/tree/main/experimental/PropertyDDS) instantiation with data binding and distributed change notifications. Intended to simplify the testing of [FluidFramework's](https://github.com/microsoft/FluidFramework) larger data use-cases.
+Minimal [property tree](https://github.com/microsoft/FluidFramework/tree/main/experimental/PropertyDDS) instantiation with data binding and distributed change notifications. Intended to simplify the testing of [FluidFramework's](https://github.com/microsoft/FluidFramework) larger data use-cases.
 
 
 ## API
