@@ -92,7 +92,7 @@ npx tinylicious
 ```
 ```sh
 npm run clean
-npm install
+npm install --legacy-peer-deps
 npm run build
 npm run test
 ```
